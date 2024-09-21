@@ -1,10 +1,21 @@
-import { connect } from "react-redux";
+import { useEffect } from "react";
+import { connect, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
+
+import { getUsersFetch } from "../../features/userSlice/user.reducer";
 
 import UserCard from "../../Components/userCard/UserCard";
 
 const Users = (props) => {
   const { users, isLoading } = props;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (users.length === 0) {
+      dispatch(getUsersFetch());
+    }
+  }, []);
 
   return (
     <div className="container">
@@ -40,6 +51,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(
+    {
+      getUsersFetch,
+    },
+    dispatch
+  );
 
 export default connect(mapStateToProps, mapDispatchToProps)(Users);

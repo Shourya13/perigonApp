@@ -3,10 +3,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import { connect, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 
+import { toast } from "react-toastify";
+
 import {
   getUsersFetch,
   updateUser,
 } from "../../features/userSlice/user.reducer";
+
+const errToastOptions = {
+  position: "bottom-right",
+  pauseOnHover: true,
+  type: "error",
+};
 
 const EditUser = (props) => {
   const { users, isLoading, updateUser } = props;
@@ -18,9 +26,11 @@ const EditUser = (props) => {
   const [data, setData] = useState();
   const [index, setIndex] = useState();
 
-  useEffect(() => {
-    dispatch(getUsersFetch());
-  }, [dispatch, getUsersFetch]);
+  const [errors, setErrors] = useState([]);
+
+  // useEffect(() => {
+  //   dispatch(getUsersFetch());
+  // }, [dispatch, getUsersFetch]);
 
   useEffect(() => {
     if (!isLoading && users.length > 0 && id) {
@@ -29,6 +39,33 @@ const EditUser = (props) => {
       setData(users[userIndex]);
     }
   }, [users, isLoading, id]);
+
+  const validate = () => {
+    const newErrors = [];
+
+    if (!data.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (data.name.length < 3) {
+      newErrors.push("Name must be at least 3 characters long");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!data.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(data.email)) {
+      newErrors("Invalid email format");
+    }
+
+    if (
+      !data.address.suite.trim() &&
+      !data.address.street.trim() &&
+      !data.address.city.trim()
+    ) {
+      newErrors("Address is required");
+    }
+
+    setErrors(newErrors);
+  };
 
   return (
     <div className="container">
@@ -173,13 +210,10 @@ const EditUser = (props) => {
                   type="submit"
                   className="button is-primary"
                   onClick={() => {
-                    updateUser([
-                      ...users.slice(0, index),
-                      data,
-                      ...users.slice(index + 1),
-                    ]);
-
-                    navigate("/users");
+                    validate();
+                    if (errors.length > 0) {
+                      errors.forEach((error) => toast(error), errToastOptions);
+                    }
                   }}
                 >
                   Submit
