@@ -1,0 +1,26 @@
+.user-card {
+    border: 1px solid #dfdfdf;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px 0px rgba(21, 21, 21, 0.16);
+
+    .user-details {
+        .user-email {
+            color: gray
+        }
+
+        .user-addr,
+        .user-name,
+        .user-email {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            line-clamp: 1;
+            -webkit-box-orient: vertical;
+        }
+    }
+
+    .user-img {
+        border-radius: 50%;
+    }
+}
